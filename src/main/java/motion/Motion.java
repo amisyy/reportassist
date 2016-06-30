@@ -9,39 +9,82 @@ import java.util.regex.Pattern;
 import database.SQLop;
 
 public class Motion {
-	private static int[] count = new int[11];
-	private static double aver;
-	private static double sum = 0.0;
-	private static int n = 0;
+	private int[] count = new int[11];
+	private double aver_total;
+	private double aver_media;
+	private double aver_gov;
+	private double aver_public;
 	private SQLop sqlop;
-	private List<Map<String, String>> result;
-	private int resultSize;
+	private List<Map<String, String>> result_media;
+	private List<Map<String, String>> result_gov;
+	private List<Map<String, String>> result_public;
+	
+	Dict opt_motion;
+	Dict content1;
+	Dict content2;
+	Dict content3;
+	Dict content4;
+	Dict content5;
+	Dict neg_motion;
+	Dict deny_words;
+	
 	public int[] get_count(){
 		return count;
 	}
-	public double get_aver(){
-		return aver;
+	public double get_aver_media(){
+		return aver_media;
 	}
+	public double get_aver_gov(){
+		return aver_gov;
+	}
+	public double get_aver_public(){
+		return aver_public;
+	}
+	public double get_aver_total(){
+		return aver_total;
+	}
+	
+	
 	public Motion(String keyword){
 		init(keyword);
 	}
-	public void init(String keyword) {
-		Dict opt_motion = new Dict(".\\dict\\opt_motion.txt");
-		Dict content1 = new Dict(".\\dict\\content1.txt");
-		Dict content2 = new Dict(".\\dict\\content2.txt");
-		Dict content3 = new Dict(".\\dict\\content3.txt");
-		Dict content4 = new Dict(".\\dict\\content4.txt");
-		Dict content5 = new Dict(".\\dict\\content5.txt");
-		Dict neg_motion = new Dict(".\\dict\\neg_motion.txt");
-		Dict deny_words = new Dict(".\\dict\\deny_words.txt");
+	private void init(String keyword) {
+		
+		opt_motion = new Dict(".\\dict\\opt_motion.txt");
+		content1 = new Dict(".\\dict\\content1.txt");
+		content2 = new Dict(".\\dict\\content2.txt");
+		content3 = new Dict(".\\dict\\content3.txt");
+		content4 = new Dict(".\\dict\\content4.txt");
+		content5 = new Dict(".\\dict\\content5.txt");
+		neg_motion = new Dict(".\\dict\\neg_motion.txt");
+		deny_words = new Dict(".\\dict\\deny_words.txt");
 		//Dict reviews = new Dict("reviews.txt"); 
 
 
 		sqlop = new SQLop();
 		sqlop.initialize();
-		result = sqlop.search(keyword, 3);
+		result_media = sqlop.search(keyword, 3);
+		result_gov = sqlop.search(keyword, 0);
+		result_public = sqlop.search(keyword, 4);
 		sqlop.close();
-		resultSize = result.size();
+		int resultSize_media = result_media.size();
+		int resultSize_public = result_public.size();
+		int resultSize_gov = result_gov.size();
+		
+		aver_gov = calculate(result_gov,resultSize_gov);
+		aver_public = calculate(result_public,resultSize_public);
+		aver_media = calculate(result_media,resultSize_media);
+		aver_total = (aver_gov*resultSize_gov+aver_media*resultSize_media+aver_public*resultSize_public)/(resultSize_gov+resultSize_media+resultSize_public);
+		System.out.println("aver_gov:"+Double.toString(aver_gov)
+				+ " aver_public:"+Double.toString(aver_public)
+				+ " aver_media:"+Double.toString(aver_media)
+				+ " aver_total:"+Double.toString(aver_total)); 
+	}
+	private double calculate(List<Map<String, String>> result, int resultSize){
+
+		double sum = 0.0;
+		int n = 0;
+		double aver = 0;
 		
 		System.out.println("resultsize:"+Integer.toString(resultSize));
 //		String regEx = "[\\u4e00-\\u9fa5]";
@@ -286,8 +329,8 @@ public class Motion {
 			sum += ans;
 			n++;
 		}
-		aver = sum/n;
 		System.out.println("inner ave:"+Double.toString(aver));
+		return aver = sum/n;
 		//int out[] = get_count();
 		//for (int i=0;i<11;i++)
 		//	System.out.println(out[i]);

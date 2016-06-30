@@ -51,7 +51,7 @@ public class sdpc implements PageProcessor {
 			page.putField("author",
 					page.getHtml().xpath("span[@id='dSourceText']/a/text()"));
 			page.putField("baseURL", page.getUrl());
-			page.putField("type", "发改委");
+			page.putField("type", "政府");
 
 		}
 	}

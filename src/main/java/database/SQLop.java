@@ -78,18 +78,27 @@ public class SQLop {
 		final int GOV=0;
 		final int PA=1;
 		final int NEWS=2;
-		final int CONT=3;
+		final int MEDIA=3;
+		final int COMMENT = 4;
+		final int GOVMEDIA = 5;
+		final int YEAR = 6;
 		List<Map<String, String>> result = new ArrayList<Map<String,String>>();
 		String sql = "SELECT * FROM webpage WHERE (content LIKE '%"
 				+ keyword + "%' OR title LIKE'%" + keyword + "%')";
 		if(searchType==GOV)
-			sql=sql+" AND (type = '科技部' OR  type = '发改委' OR  type = '工信部') order by savetime desc";
+			sql=sql+" AND (type = '政府') order by savetime desc";
 		else if(searchType==PA)
 			sql=sql+" AND (type='论文' OR type='专利') order by savetime desc";
 		else if(searchType==NEWS)
 			sql=sql+"AND type='新闻' order by savetime desc";
-		else if(searchType==CONT)
-			sql=sql+"AND type='评论' order by savetime desc";
+		else if(searchType==MEDIA)
+			sql=sql+"AND type='媒体' order by savetime desc";
+		else if(searchType==COMMENT)
+			sql=sql+"AND type='公众' order by savetime desc";
+		else if(searchType==GOVMEDIA)
+			sql=sql+"AND type='政府' OR type='媒体' order by savetime desc";
+		else if(searchType==YEAR)
+			sql=sql+"AND year(savetime)='" + hottestYear(keyword) +"'";
 		try {
 			statemt = conn.createStatement();
 			results = statemt.executeQuery(sql);
@@ -439,7 +448,7 @@ public class SQLop {
 				}
 				break;
 			case YEAR_comments:
-				sql = "SELECT year(savetime),COUNT(*) FROM webpage WHERE type='新闻' OR type = '评论' OR  type = '评论（百姓）' OR type = '政府' GROUP BY year(savetime) ORDER BY year(savetime)";
+				sql = "SELECT year(savetime),COUNT(*) FROM webpage WHERE type='政府' OR type = '媒体' OR  type = '公众' GROUP BY year(savetime) ORDER BY year(savetime)";
 				results = statemt.executeQuery(sql);
 				while (results.next()) {
 					if (results.getString(1) == null)
@@ -449,7 +458,7 @@ public class SQLop {
 				}
 				break;
 			case SOURCE:
-				sql = "SELECT type,COUNT(*) FROM tmp WHERE type = '政府' OR  type = '评论（百姓）' OR  type = '评论' GROUP BY type";
+				sql = "SELECT type,COUNT(*) FROM tmp WHERE type = '政府' OR  type = '媒体' OR  type = '公众' GROUP BY type";
 				results = statemt.executeQuery(sql);
 				while (results.next()) {
 					if (results.getString(1) == null)
@@ -475,6 +484,22 @@ public class SQLop {
 		return resultMap;
 	}
 
+	//最大年份
+	public String hottestYear(String keyword){
+		Map<String, Integer> count = count(11, keyword);
+		int max = 0;
+		String year = null;
+		for(int i=2016;i>2005;i--){
+			int tmp = 0;
+			if(count.get(Integer.toString(i))!=null) tmp = count.get(Integer.toString(i));
+			if(tmp>max){
+				max = tmp;
+				year = Integer.toString(i);
+			}
+		}
+		return year;
+	}
+	
 	public boolean isRepeat(String title) {
 		Statement statemt = null;
 		ResultSet results = null;

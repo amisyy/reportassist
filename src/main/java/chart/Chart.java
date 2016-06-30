@@ -63,9 +63,11 @@ public class Chart {
 
 	SQLop sqlop = new SQLop();
 	String keyword = new String();
+	Motion motion;
 
-	public Chart(String kw) {
+	public Chart(String kw, Motion motion) {
 		keyword = kw;
+		this.motion = motion;
 		sqlop.initialize();
 		// System.out.println(sqlop.countAllResult(keyword));
 		//barChart(SITE, "site.jpg", VERTICAL);
@@ -172,7 +174,7 @@ public class Chart {
 		if (type == YEAR_comments)
 			head = "关注热度" + head;
 		if (type == MOTION) {
-			head = "舆情分析" + head;
+			head = "媒体舆情分析" + head;
 			chart = ChartFactory.createLineChart(head, "态度", "数量", dataset,
 					PlotOrientation.VERTICAL, false, true, false);
 		} else {
@@ -231,9 +233,9 @@ public class Chart {
 		HashMap<String, Integer> hashmap;
 		if (type == MOTION) {
 			hashmap =new HashMap();
-			Motion t = new Motion(keyword);
+			Motion t = motion;
 			for (int i=0;i<=10;i++)
-				hashmap.put("级别"+i, (Integer)t.get_count()[i]);
+				hashmap.put(Integer.toString(i-5), (Integer)t.get_count()[i]);
 		} else {
 			hashmap = sqlop.count(type, keyword);
 		}

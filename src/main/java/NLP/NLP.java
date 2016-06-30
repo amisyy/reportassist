@@ -1,4 +1,4 @@
-package NLP;
+ package NLP;
 
 import java.sql.*;
 import java.util.*;
@@ -91,7 +91,7 @@ public class NLP
 	}
 	
 	//输入关键字从数据库中查找相关记录，将所有报告压缩成一篇文摘
-		public String report(String keyword)
+	public String report(String keyword)
 		{
 			String result = new String();
 			String goverment =new String();
@@ -152,5 +152,9 @@ public class NLP
 			result += HanLP.extractSummary(news,newsnum * 2);
 			return result;
 		}
+	
+	//提取关键词
+	public static List<String> getKeyword(String document, int size){
+		return HanLP.extractKeyword(document, size);
+	}
 }
-

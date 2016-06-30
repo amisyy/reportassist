@@ -85,7 +85,7 @@ public class tencentComment implements PageProcessor {
 			// }
 
 			page.putField("baseURL", page.getUrl());
-			page.putField("type", "评论");
+			page.putField("type", "媒体");
 			// 添加评论的链接
 			String aa = page.getHtml().regex("cmt_id = (.*)").toString();
 			if (aa == null)

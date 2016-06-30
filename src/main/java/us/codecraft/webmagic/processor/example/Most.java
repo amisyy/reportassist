@@ -45,7 +45,7 @@ public class Most implements PageProcessor {
 			page.putField("author",
 					temp.substring(temp.indexOf("日 ") + 2, temp.length()).toString().replaceAll(" ", "").replaceAll("　", ""));
 			page.putField("baseURL", page.getUrl());
-			page.putField("type", "科技部");
+			page.putField("type", "政府");
 		}
 
 	}

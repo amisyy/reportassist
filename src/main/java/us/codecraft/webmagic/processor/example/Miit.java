@@ -61,7 +61,7 @@ public class Miit implements PageProcessor {
 			}
 
 			page.putField("baseURL", page.getUrl());
-			page.putField("type", "工信部");
+			page.putField("type", "政府");
 		}
 
 	}

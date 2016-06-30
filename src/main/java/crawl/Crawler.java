@@ -39,33 +39,6 @@ public class Crawler {
 
 	public void start() {
 
-		if (option[0] == true) {
-			spider1 = Spider.create(new Most());
-			spider1.addUrl(
-					"http://cn.bing.com/search?q=site%3A" + website[0] + "+%22"
-							+ key + "%22+filetype%3Ahtml")
-					.addPipeline(new ConsolePipeline())
-					.addPipeline(new MysqlPipeline()).thread(2).start();
-
-		}
-		if (option[1] == true) {
-			spider2 = Spider.create(new Miit());
-			spider2.addUrl(
-					"http://cn.bing.com/search?q=site%3A" + website[1] + "+%22"
-							+ key + "%22+filetype%3Ahtml")
-					.addPipeline(new ConsolePipeline())
-					.addPipeline(new MysqlPipeline()).thread(2).start();
-
-		}
-		if (option[2] == true) {
-			spider3 = Spider.create(new sdpc());
-			spider3.addUrl(
-					"http://cn.bing.com/search?q=site%3A" + website[2] + "+%22"
-							+ key + "%22+filetype%3Ahtml")
-					.addPipeline(new ConsolePipeline())
-					.addPipeline(new MysqlPipeline()).thread(2).start();
-			return;
-		}
 		if (option[5] == true) {
 			spider4 = Spider.create(new Ifengnews());
 			spider4.addUrl(
@@ -80,8 +53,35 @@ public class Crawler {
 			spider5 = Spider.create(new tencentComment(key));
 			spider5.addUrl("https://www.sogou.com/sogou?site=news.qq.com&query="+key+"&pid=sogou-wsse-b58ac8403eb9cf17-0004")
 			.addPipeline(new ConsolePipeline())
-					.addPipeline(new MysqlPipeline()).start();
+					.addPipeline(new MysqlPipeline()).thread(2).start();
 
+		}
+		if (option[0] == true) {
+			spider1 = Spider.create(new Most());
+			spider1.addUrl(
+					"http://cn.bing.com/search?q=site%3A" + website[0] + "+%22"
+							+ key + "%22+filetype%3Ahtml")
+					.addPipeline(new ConsolePipeline())
+					.addPipeline(new MysqlPipeline()).thread(1).start();
+
+		}
+		if (option[1] == true) {
+			spider2 = Spider.create(new Miit());
+			spider2.addUrl(
+					"http://cn.bing.com/search?q=site%3A" + website[1] + "+%22"
+							+ key + "%22+filetype%3Ahtml")
+					.addPipeline(new ConsolePipeline())
+					.addPipeline(new MysqlPipeline()).thread(1).start();
+
+		}
+		if (option[2] == true) {
+			spider3 = Spider.create(new sdpc());
+			spider3.addUrl(
+					"http://cn.bing.com/search?q=site%3A" + website[2] + "+%22"
+							+ key + "%22+filetype%3Ahtml")
+					.addPipeline(new ConsolePipeline())
+					.addPipeline(new MysqlPipeline()).thread(1).start();
+			return;
 		}
 		if (option[4] == true) {
 			spider6 = Spider.create(new Patent("实用新型"));

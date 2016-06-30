@@ -202,7 +202,7 @@ public class ResultPanel1 extends JPanel {
 	}
 	
 	public void getResult(String keyword){
-		new Chart(keyword);
+		//new Chart(keyword);
 		this.keyword = keyword;
 		sqlop = new SQLop();
 		sqlop.initialize();
