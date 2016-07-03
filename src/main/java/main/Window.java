@@ -13,8 +13,10 @@ import java.awt.Window.Type;
 import java.awt.BorderLayout;
 import java.awt.GridBagLayout;
 
+import javax.swing.DefaultCellEditor;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.JComponent;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
@@ -55,6 +57,8 @@ import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -73,6 +77,8 @@ import javax.swing.plaf.IconUIResource;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
@@ -831,6 +837,8 @@ public class Window {
 			}
 
 			public boolean isCellEditable(int row, int column){
+				if(column==1)
+					return true;
 				return false;
 			}
 		}
@@ -844,13 +852,15 @@ public class Window {
 
 			resultSize = result.size();
 			table_result = new JTable();
-			MyTableModel model = new MyTableModel(resultSize,1);
+			MyTableModel model = new MyTableModel(resultSize,2);
 			table_result.setModel(model);
+			table_result.getColumnModel().getColumn(0).setPreferredWidth((int) (frame.getWidth()*0.9));
 			table_result.setEnabled(true);
 			table_result.getTableHeader().setVisible(false);
 			table_result.setDefaultRenderer(Object.class,new ResultTableFiller());
+			table_result.getColumnModel().getColumn(1).setCellEditor(new myButtonEditor(new JCheckBox()));
 
-			this.updateRowHeights();
+			updateRowHeights();
 			table_result.addMouseListener(new MouseAdapter() {
 				@Override
 				public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -886,8 +896,8 @@ public class Window {
 
 		//加载关键词相关信息（主要）
 		public void getResult(String keyword) {
-			Motion motion = new Motion(keyword);
-			new Chart(keyword, motion);
+			//Motion motion = new Motion(keyword);
+			//new Chart(keyword, motion);
 			this.keyword = keyword;
 			sqlop = new SQLop();
 			sqlop.initialize();
@@ -904,10 +914,10 @@ public class Window {
 			resultAllSize = resultAll.size();
 			
 			java.text.DecimalFormat df =new java.text.DecimalFormat("0.00");
-			String tmp = df.format(motion.get_aver_media());
+			/*String tmp = df.format(motion.get_aver_media());
 			label_chart021.setText(tmp);
 			info.setMedia_attitude(tmp);
-			tmp = df.format(motion.get_aver_public());
+			//tmp = df.format(motion.get_aver_public());
 			label_chart023.setText(tmp);
 			info.setPublic_attitude(tmp);
 			tmp = df.format(motion.get_aver_gov());
@@ -929,7 +939,7 @@ public class Window {
 			list = getKeyword(result_hottest_year);
 			label_chart037.setText(hottest_year + ":" + List2Str(list));
 			info.setYear_theme(list);
-			
+			*/
 
 			label_chart021.invalidate();
 			label_chart021.repaint();
@@ -1082,11 +1092,57 @@ public class Window {
 		}
 		
 		//填充表格内容
+		class myButtonEditor extends DefaultCellEditor
+		{
+			JPanel tmp_panel=new JPanel();
+			JButton tmp_button=new JButton("显示全文");
+		      public myButtonEditor(JCheckBox checkBox) {
+		        super(checkBox);
+		        tmp_button.setOpaque(true);
+		        tmp_button.addActionListener
+		        (new ActionListener() 
+		        {
+		          public void actionPerformed(ActionEvent e) {
+		        	  JFrame f=new JFrame();
+		        	  f.show();
+		        	  f.setBounds(500, 120, 600, 500);
+		        	  //f.setSize(600, 500);
+		        	  f.addWindowListener(new WindowAdapter()
+		        	  {
+		        	      public void windowClosing(WindowEvent e) {
+		        	             System.exit(0);
+		        	         }
+		        	  }
+		        			  );
+		          }
+		        });
+		      }
+		      public JComponent getTableCellEditorComponent(JTable table, Object value,
+		              boolean isSelected, int row, int column) 
+		      {
+					tmp_panel.setLayout(null);
+					tmp_button.setBounds(0,30,90,30);
+					tmp_panel.add(tmp_button);
+					return tmp_panel;
+		      }
+			
+		}
 		class ResultTableFiller implements TableCellRenderer {
 
 			@Override
 			public Component getTableCellRendererComponent(JTable arg0,
 					Object arg1, boolean arg2, boolean arg3, int row, int column) {
+				if(column==1)
+				{
+					JPanel tmp_panel=new JPanel();
+					tmp_panel.setLayout(null);
+					JButton tmp_button=new JButton("显示全文");
+					tmp_button.setBounds(0,30,90,30);
+					tmp_panel.add(tmp_button);
+					return tmp_panel;
+				}
+				else
+				{
 				textPane = new JTextPane();
 				StyledDocument sd = getNewStyledDocument();
 				insertDoc(sd, result.get(row).get("type"), "STYLE_type");
@@ -1107,6 +1163,7 @@ public class Window {
 								+ "\n", "STYLE_text");
 				textPane.setStyledDocument(sd);
 				return textPane;
+				}
 			}
 
 		}
